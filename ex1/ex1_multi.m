@@ -104,7 +104,14 @@ fprintf('\n');
 % ====================== YOUR CODE HERE ======================
 % Recall that the first column of X is all-ones. Thus, it does
 % not need to be normalized.
+<<<<<<< HEAD
 price = 0; % You should change this
+=======
+new_sample = [1630 3];
+new_sample = (new_sample - mu) ./ sigma; % normalize new sample
+new_sample = [1 new_sample];
+price = new_sample* theta; % You should change this
+>>>>>>> master
 
 
 % ============================================================
@@ -149,7 +156,12 @@ fprintf('\n');
 
 % Estimate the price of a 1650 sq-ft, 3 br house
 % ====================== YOUR CODE HERE ======================
+<<<<<<< HEAD
 price = 0; % You should change this
+=======
+new_sample = [1 1630 3];
+price = new_sample* theta; % You should change this
+>>>>>>> master
 
 
 % ============================================================

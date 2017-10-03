@@ -18,9 +18,15 @@ for iter = 1:num_iters
     %
     hTheta = X*theta-y; % vector of size m
     
+<<<<<<< HEAD
     theta0 = theta(1) - alpha* (1 / m) * (hTheta' * X(:,1))
     theta1 = theta(2) - alpha* (1 / m) * (hTheta' * X(:,2))
     theta = [theta0;theta1]
+=======
+    %theta0 = theta(1) - alpha* (1 / m) * (hTheta' * X(:,1))
+    %theta1 = theta(2) - alpha* (1 / m) * (hTheta' * X(:,2))
+    theta = theta - alpha* (1/m) * (X' * hTheta); 
+>>>>>>> master
     %theta0 = theta(0) - alpha* (1 / m) * ((X*theta-y).*diag(X)
     % ============================================================
 
