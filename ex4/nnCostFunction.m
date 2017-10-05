@@ -24,7 +24,7 @@ Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):en
 
 % Setup some useful variables
 m = size(X, 1);
-         
+K = num_labels;         
 % You need to return the following variables correctly 
 J = 0;
 Theta1_grad = zeros(size(Theta1));
@@ -61,31 +61,59 @@ Theta2_grad = zeros(size(Theta2));
 %               the regularization separately and then add them to Theta1_grad
 %               and Theta2_grad from Part 2.
 %
+a1 = [ones(m,1) X]; % add bias to all input samples
+z2 = a1*Theta1';   % (m,n+1)*(n+1,s2) = (m,s2)
+a2 = [ones(m,1) sigmoid(z2)];
+z3 = a2*Theta2';   % (m,s2+1)*(s2+1,y) = (m,y)
+hthetaX = a3 = sigmoid(z3);
 
+% don't regularize the thetas for bias terms
+reg_Term = (lambda /(2*m)) * (sum(sum(Theta1(:,2:end).^2)) + sum(sum(Theta2(:,2:end).^2)));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+cost=0;
+for i = 1:m
+  actualY = binarize(y(i),K);
+  predY   = hthetaX(i,:)';
+  cost += sum(((-actualY) .* log(predY))  - ((1-actualY) .* log(1-predY)));
+end
+J = cost/m + reg_Term;
 
 % -------------------------------------------------------------
+Sigma1 = zeros(m,1);
+Sigma2 = zeros(size(Theta1,1),1);
+Sigma3 = zeros(K,1);
+
+Delta1 = zeros(size(Theta1,1),size(Theta1,2)); %(s2,n+1)
+Delta2 = zeros(size(Theta2,1),size(Theta2,2)); %(K ,s2+1)
+
+%% aplly forward pass sample by sample for backpropogation
+for i=1:m
+  a1 =[1 X(i,:)]';  % (n+1,1)
+  z2 = Theta1*a1;   % (s2,n+1)*(n+1,1) = (s2,1)
+  a2 = [1 ;sigmoid(z2)]; 
+  z3 = Theta2*a2; % (K,s2+1)*(s2+1,1) = (K,1)
+  a3 = sigmoid(z3);
+  
+  Sigma3 = a3 - binarize(y(i),K);                   %(K,1)
+  Sigma2 = (Theta2'*Sigma3) .* sigmoidGradient([1;z2]); %(s2+1,K)*(K,1) = (s2+1,1)
+  Sigma2 = Sigma2(2:end); % remove bias term effect (s2,1)
+  Delta2 = Delta2 + Sigma3*a2'; %(K,1)*(1,s2+1) = (K,s2+1)
+  Delta1 = Delta1 + Sigma2*a1'; %(s2,1)*(1,n+1) = (s2,n+1)
+end
+
+% calculate regularized gradient
+p1 = (lambda/m)*[zeros(size(Theta1, 1), 1) Theta1(:, 2:end)];
+p2 = (lambda/m)*[zeros(size(Theta2, 1), 1) Theta2(:, 2:end)];
+Theta1_grad = Delta1./m + p1;
+Theta2_grad = Delta2./m + p2;
 
 % =========================================================================
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
+end
 
-
+function [bin] = binarize(x,nlabes)
+  bin = zeros(nlabes,1);
+  bin(x)=1;
 end
